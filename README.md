@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Monopoly Assignment
 
 ## Overview:
@@ -109,3 +110,6 @@ And you graded everyone's work as superior to yours on question 5 giving an aver
 ## Submission
 
 Submit a single zip file of this completed project to moodle before the deadline.
+=======
+# cs2-ass
+>>>>>>> 00f9e3c394febb5effa27418171a564713e4c9fc
