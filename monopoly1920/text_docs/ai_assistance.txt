@@ -1,0 +1,94 @@
+[ID: 001]
+I used ChatGPT to help me create a main entry point for the Monopoly game. I asked for a minimal script that launches the existing Controller and GUI using Tkinter.
+
+Prompt:
+"Is the current Monopoly code enough to run the game, and how can I create a main.py file to launch it?"
+
+ChatGPT helped me identify that a main entry point was missing and generated a basic `main.py` file:
+
+```python
+import tkinter as tk                          # Line 1
+from monopoly1920 import controller           # Line 2
+
+if __name__ == "__main__":                    # Line 3
+    root = tk.Tk()                            # Line 4
+    game = controller.Controller(root)        # Line 5
+    root.mainloop()                           # Line 6
+```
+
+This file now serves as the main launcher for the game and simplifies testing and development.
+
+[ID: 002]
+I used ChatGPT to help me implement the full Jail system in Monopoly. This included both backend logic in the Player and Controller classes.
+
+Prompt:
+"How do I implement Monopoly jail rules including landing on Go to Jail, rolling doubles 3 times, tracking jail turns, and using Get Out of Jail Free cards?"
+
+ChatGPT guided the following changes:
+- In `player.py`, I added:
+```python
+self.__in_jail = False
+self.__jail_turns = 0
+self.__get_out_of_jail_cards = 0
+```
+And methods like:
+```python
+def go_to_jail(self): ...
+def leave_jail(self): ...
+def use_get_out_of_jail_card(self): ...
+```
+
+- In `controller.py`, I added:
+```python
+if self.__roll_count >= 3:
+    player.go_to_jail()
+
+if player.position == 30:
+    player.go_to_jail()
+```
+
+- I also added a new method `handle_jail_turn()` to control logic for jail decisions (roll doubles, pay, use card).
+
+This collaboration made it much faster to implement all jail-related functionality cleanly.
+
+[ID: 003]
+I used ChatGPT to help fully integrate the jail system into the main gameplay loop. While the jail logic existed in isolation, it wasn't being triggered correctly during turns or dice rolls.
+
+Prompt:
+"Why doesn't the jail system activate when I land on 'Go to Jail' or roll 3 doubles in Monopoly? And how do I block turns for jailed players?"
+
+ChatGPT helped identify that I needed to:
+1. Check if a player is in jail at the start of their turn and call `handle_jail_turn()`
+2. Add logic for landing on square 30 (Go to Jail)
+3. Add logic to track and trigger jail after 3 doubles in a row
+
+Code added in `controller.py`:
+
+In `_roll_action(self, data)`:
+```python
+if player.is_in_jail():
+    self.handle_jail_turn(player)
+    return
+```
+
+Also in `_roll_action(self, data)`:
+```python
+if player.position == 30:
+    player.go_to_jail()
+    observer.Event("update_state", f"{player.name} landed on 'Go to Jail' and is sent to Jail!")
+    return
+```
+
+In `_roll_dice(self)`:
+```python
+if dice1 == dice2:
+    self.__roll_count += 1
+    if self.__roll_count >= 3:
+        player = self._gameboard.get_current_player()
+        player.go_to_jail()
+        observer.Event("update_state", f"{player.name} rolled 3 doubles in a row and is sent to Jail!")
+        self.__roll_count = 0
+        return dice1, dice2
+```
+
+This made the jail system functional as part of the game flow and testable in regular turns.

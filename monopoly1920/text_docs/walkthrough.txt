@@ -1,0 +1,72 @@
+[ID: 001]
+I created a main.py file to serve as the entry point for launching the Monopoly game. This file initializes the Tkinter GUI and instantiates the Controller class that manages game logic.
+
+File: main.py
+Key lines:
+- Line 2: `from monopoly1920 import controller` imports the main Controller class
+- Lines 4–7: Initializes Tkinter and starts the main game loop
+
+To experience this change:
+1. Run `main.py`
+2. The Monopoly game window should appear and begin the first player's turn
+3. From there, all GUI interactions are routed through the Controller and View classes
+
+This addition makes it easier to launch and test the game without modifying the internal logic files like `controller.py`.
+
+[ID: 002]
+I implemented the Jail system, including rules for sending players to jail, tracking their turns, and letting them leave through various options.
+
+Files modified:
+- player.py
+- controller.py
+
+Key changes:
+- player.py:
+  - Added attributes: `__in_jail`, `__jail_turns`, `__get_out_of_jail_cards`
+  - Added methods: `go_to_jail()`, `leave_jail()`, `is_in_jail()`, `increment_jail_turn()`, `use_get_out_of_jail_card()`
+
+- controller.py:
+  - Added logic to:
+    - Send player to jail when landing on space 30 ("Go to Jail")
+    - Send player to jail if they roll doubles 3 times
+    - Track jail turns and allow exit via rolling doubles, paying $50 after 3 turns, or using a card
+  - New method `handle_jail_turn(player)` controls jail logic per turn
+
+[ID: 004]
+I fully integrated the Jail mechanics into the actual game flow by hooking them into the player turn and dice roll systems.
+
+Files modified:
+- controller.py
+
+Key changes:
+1. **Skipping turn for jailed players:**
+   - In `_roll_action(self, data)`:
+     - Line added immediately after getting the current player:
+```python
+if player.is_in_jail():
+    self.handle_jail_turn(player)
+    return
+```
+
+2. **Sending player to jail if they land on 'Go to Jail' (space 30):**
+   - After retrieving the current square in `_roll_action(self, data)`:
+```python
+if player.position == 30:
+    player.go_to_jail()
+    observer.Event("update_state", f"{player.name} landed on 'Go to Jail' and is sent to Jail!")
+    return
+```
+
+3. **Sending player to jail after rolling doubles 3 times:**
+   - Inside `_roll_dice(self)` method:
+```python
+if dice1 == dice2:
+    self.__roll_count += 1
+    if self.__roll_count >= 3:
+        player = self._gameboard.get_current_player()
+        player.go_to_jail()
+        observer.Event("update_state", f"{player.name} rolled 3 doubles in a row and is sent to Jail!")
+        self.__roll_count = 0
+        return dice1, dice2
+```
+   - This logic ensures that repeated doubles now carry the correct penalty.
