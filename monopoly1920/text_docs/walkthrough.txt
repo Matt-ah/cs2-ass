@@ -32,7 +32,6 @@ Key changes:
     - Track jail turns and allow exit via rolling doubles, paying $50 after 3 turns, or using a card
   - New method `handle_jail_turn(player)` controls jail logic per turn
 
-[ID: 004]
 I fully integrated the Jail mechanics into the actual game flow by hooking them into the player turn and dice roll systems.
 
 Files modified:
@@ -70,3 +69,17 @@ if dice1 == dice2:
         return dice1, dice2
 ```
    - This logic ensures that repeated doubles now carry the correct penalty.
+
+[ID: 003]
+I modified the player creation process so that players can choose their own names.
+In the Controller class's _create_players() method, I added a prompt using tkinter.simpledialog.askstring to ask for each player's name.
+If no name is provided, it defaults to "Player X".
+
+Key changes:
+- Imported tkinter.simpledialog as simpledialog.
+- Updated _create_players() to prompt for names:
+  For each player:
+    name = simpledialog.askstring("Player Name", f"Enter name for Player {i+1}:", parent=self._view.root)
+    if not name, defaults to "Player {i+1}".
+
+To test: Run the game and you will be prompted to enter names for all players.

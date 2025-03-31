@@ -51,12 +51,6 @@ if player.position == 30:
 
 This collaboration made it much faster to implement all jail-related functionality cleanly.
 
-[ID: 003]
-I used ChatGPT to help fully integrate the jail system into the main gameplay loop. While the jail logic existed in isolation, it wasn't being triggered correctly during turns or dice rolls.
-
-Prompt:
-"Why doesn't the jail system activate when I land on 'Go to Jail' or roll 3 doubles in Monopoly? And how do I block turns for jailed players?"
-
 ChatGPT helped identify that I needed to:
 1. Check if a player is in jail at the start of their turn and call `handle_jail_turn()`
 2. Add logic for landing on square 30 (Go to Jail)
@@ -92,3 +86,11 @@ if dice1 == dice2:
 ```
 
 This made the jail system functional as part of the game flow and testable in regular turns.
+
+[ID: 006]
+I used ChatGPT to help me add a feature for player name selection.
+
+I prompted: "How can I prompt for player names in a Python tkinter game?"
+ChatGPT suggested modifying the _create_players() method in the Controller to use tkinter.simpledialog.askstring.
+
+I implemented this so that each player is prompted for a name at the start of the game, defaulting to "Player X" if none is provided.

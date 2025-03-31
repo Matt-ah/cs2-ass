@@ -5,6 +5,7 @@ import gameboard
 import player as plr # avoid naming conflict with the player module
 import gamesquare
 import observer
+import tkinter.simpledialog as simpledialog
 
 class Controller(observer.Observer):
     """Control the game flow"""
@@ -46,10 +47,13 @@ class Controller(observer.Observer):
         print("observed event roll")
 
     def _create_players(self, num_players):
-        """Create num_players players and return a list of them"""
+        """Create num_players players and return a list of them, prompting for names."""
         players = []
         for i in range(num_players):
-            player = plr.Player(f"Player {i}", 1500)
+            name = simpledialog.askstring("Player Name", f"Enter name for Player {i + 1}:", parent=self._view.root)
+            if not name:  # if the user cancels or enters nothing, use default name
+                name = f"Player {i + 1}"
+            player = plr.Player(name, 1500)
             players.append(player)
         return players
 

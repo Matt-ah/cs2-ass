@@ -236,4 +236,3 @@ if __name__ == '__main__':
     controller = controller.Controller(root)
 
     root.mainloop()
-
